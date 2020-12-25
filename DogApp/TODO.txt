@@ -1,0 +1,7 @@
+App (Front) Side:
+- Application needs to fetch and combine Breed list and images from API. Now it's separeted.
+- Random Image loading (first time app need to download images or need to save data in local storage).
+
+
+Server Side:
+1. Server side needs some image fetching api or fetching breeds API includes image URL.

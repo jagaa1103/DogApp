@@ -4,10 +4,10 @@
  */
 
 import React from 'react';
-import {
-  SafeAreaView,
-  StatusBar,
-} from 'react-native';
+import { SafeAreaView, StatusBar, TextInput, StyleSheet, Image } from 'react-native';
+
+import DogList from './components/DogList';
+import { fetchBreedList } from "./service/apiService";
 
 class App extends React.Component {
 
@@ -18,35 +18,40 @@ class App extends React.Component {
     this.state = { 
       dogList: [],
       isLoading: false,
+      inputText: "",
+      filteredDogList: []
     };
   }
 
   // App component is mounted to the app
-  componentDidMount(){
+  async componentDidMount(){
     // for showing loading animation during fetch data from API
     this.setState({isLoading: true});
     // first time fetching data from API
-    this.fetchDogList();
+    const breedList = await fetchBreedList();
+    this.setState({isLoading: false, dogList: breedList});
   }
   
-  // Fetch dog breeds from API
-  fetchDogList () {
-    // request data by url
-    fetch("https://dog.ceo/api/breeds/list")
-      // when success data fetching from API
-      .then(response => response.json())
-      // when successfully parsed data
-      .then(json => {
-        if (json.status === "success") {
-          this.setState({isLoading: false, dogList: json.message});
-          console.log(this.state);
-        }
-        else {
-          console.log("cannot loaded data");
-        }
-      })
-      // when error happened during fetch and parse data
-      .catch(error => console.error(error.message));
+  //render list when data successfully fetched from API
+  renderList(){
+    if (this.state.filteredDogList && this.state.filteredDogList.length > 0) return <DogList data={this.state.filteredDogList} />
+    return null;
+  }
+
+  inputChanged(text) {
+    this.setState({inputText: text});
+    const list = this.filterDogs(text);
+    this.setState({filteredDogList: list});
+  }
+
+  filterDogs(text){
+    if (!text || text.length < 1) return null;
+    // return this.state.dogList.filter(dog => dog.includes(text.toLowerCase()));
+    return this.state.dogList.filter(dog => dog.startsWith(text.toLowerCase()));
+  }
+
+  showLoading(){
+    return this.state.isLoading ? <Image style={styles.loadingField} source={require("./images/dogrun.gif")} /> : null; 
   }
 
 
@@ -55,7 +60,10 @@ class App extends React.Component {
     return (
       <>
         <StatusBar barStyle="dark-content" />
-        <SafeAreaView>
+        <SafeAreaView style={styles.container}>
+          {this.showLoading()}
+          <TextInput value={this.state.inputText} onChangeText={text => this.inputChanged(text)} style={styles.input} placeholder="insert here..." />
+          {this.renderList()}
         </SafeAreaView>
       </>
     );
@@ -63,3 +71,28 @@ class App extends React.Component {
 }
 
 export default App;
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#ecf0f1',
+  },
+  input: {
+    height: 50,
+    margin: 20,
+    paddingLeft: 10,
+    fontSize: 24,
+    borderWidth: 0.3,
+    borderColor: '#ecf0f1',
+    borderRadius: 10,
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    backgroundColor: '#ffffff',
+    elevation: 6,
+  },
+  loadingField: {
+    width: 100,
+    height: 100,
+  }
+})
