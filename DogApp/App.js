@@ -8,6 +8,7 @@ import { SafeAreaView, StatusBar, TextInput, StyleSheet, Image } from 'react-nat
 
 import DogList from './components/DogList';
 import { fetchBreedList } from "./service/apiService";
+import Suggestion from "./components/Suggestion";
 
 class App extends React.Component {
 
@@ -19,7 +20,8 @@ class App extends React.Component {
       dogList: [],
       isLoading: false,
       inputText: "",
-      filteredDogList: []
+      filteredDogList: [],
+      fullInput: "",
     };
   }
 
@@ -34,12 +36,28 @@ class App extends React.Component {
   
   //render list when data successfully fetched from API
   renderList(){
-    if (this.state.filteredDogList && this.state.filteredDogList.length > 0) return <DogList data={this.state.filteredDogList} />
+    // if (this.state.filteredDogList && this.state.filteredDogList.length > 0) return <DogList data={this.state.filteredDogList} />
+
+    // show only suggested dogs only when user selects only one dog
+    if (this.state.fullInput && this.state.fullInput.length > 0) return <DogList data={[this.state.fullInput]} />
+    return null;
+  }
+  // render suggestion of input
+  renderSuggestion(){
+    if (!this.state.fullInput && this.state.filteredDogList && this.state.filteredDogList.length > 0) {
+      return <Suggestion data={this.state.filteredDogList} onPress={(item)=> this.setState({fullInput: item})} />
+    }
     return null;
   }
 
   inputChanged(text) {
-    this.setState({inputText: text});
+    this.setState({inputText: text, fullInput: ""});
+    this.state.dogList.forEach((dog) => {
+      if (dog === text) {
+        this.setState({fullInput: dog});
+        return;
+      }
+    })
     const list = this.filterDogs(text);
     this.setState({filteredDogList: list});
   }
@@ -64,6 +82,7 @@ class App extends React.Component {
           {this.showLoading()}
           <TextInput value={this.state.inputText} onChangeText={text => this.inputChanged(text)} style={styles.input} placeholder="insert here..." />
           {this.renderList()}
+          {this.renderSuggestion()}
         </SafeAreaView>
       </>
     );
