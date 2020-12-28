@@ -49,7 +49,7 @@ class App extends React.Component {
     }
     return null;
   }
-
+  // input text change event handler function
   inputChanged(text) {
     this.setState({inputText: text, fullInput: ""});
     this.state.dogList.forEach((dog) => {

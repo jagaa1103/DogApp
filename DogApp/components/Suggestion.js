@@ -1,6 +1,8 @@
 import React from "react";
 import { FlatList, View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
+
+// suggestion list function
 const Suggestion = (props) => {
     
     return (
@@ -10,6 +12,7 @@ const Suggestion = (props) => {
 
 export default Suggestion;
 
+// suggestion list item function
 const ListItem = (props) => {
     return (
         <TouchableOpacity style={styles.container} onPress={props.onPress}>
