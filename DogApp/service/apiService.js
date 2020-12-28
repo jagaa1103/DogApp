@@ -32,4 +32,17 @@ export async function fetchBreedList () {
     }
 }
 
+// fetch all pictures by breed
+export async function getAllPicturesByBreed (breed) {
+    const url = "https://dog.ceo/api/breed/" + breed + "/images";
+    try {
+        const res = await fetch(url);
+        const json = await res.json();
+        if (json.status === "success") return json.message;
+        return null;
+    } catch (e) {
+        return null;
+    }
+}
+
 

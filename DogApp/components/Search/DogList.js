@@ -1,10 +1,10 @@
 import React, {  } from "react";
-import { FlatList, KeyboardAvoidingView, StyleSheet } from "react-native";
+import { FlatList, KeyboardAvoidingView, StyleSheet, TouchableOpacity } from "react-native";
 import DogListItem from "./DogListItem";
 
 
 // Function for creating doglist and render components
-const DogList = ({ data }) => {
+const DogList = (props) => {
     return (
         <KeyboardAvoidingView
             // behavior={Platform.OS == "ios" ? "padding" : "height"}
@@ -13,7 +13,7 @@ const DogList = ({ data }) => {
             keyboardVerticalOffset={0}
             style={styles.container}
         >
-            <FlatList style={styles.list} data={data} renderItem={({item, index, separators}) => <DogListItem item={item} />} keyExtractor={item => item} numColumns={3} />
+            <FlatList style={styles.list} data={props.data} renderItem={({item}) =>  <TouchableOpacity onPress={()=> props.onPress(item)}><DogListItem item={item} /></TouchableOpacity> } keyExtractor={item => item} numColumns={3} />
         </KeyboardAvoidingView>
     )
 }
