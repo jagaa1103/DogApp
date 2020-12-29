@@ -1,9 +1,10 @@
 import React from 'react';
-import { SafeAreaView, StatusBar, TextInput, StyleSheet, Image } from 'react-native';
+import { SafeAreaView, StatusBar, TextInput, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 
 import DogList from './DogList';
 import { fetchBreedList } from "../../service/apiService";
 import Suggestion from "./Suggestion";
+import DogListItem from "./DogListItem";
 
 class SearchPage extends React.Component {
 
@@ -13,30 +14,20 @@ class SearchPage extends React.Component {
     // initializing state in component
     this.state = { 
       dogList: [],
-      isLoading: false,
       inputText: "",
       filteredDogList: [],
       fullInput: "",
+      selectedItem: null
     };
   }
 
   // App component is mounted to the app
   async componentDidMount(){
-    // for showing loading animation during fetch data from API
-    this.setState({isLoading: true});
     // first time fetching data from API
     const breedList = await fetchBreedList();
-    this.setState({isLoading: false, dogList: breedList});
+    this.setState({dogList: breedList});
   }
   
-  //render list when data successfully fetched from API
-  renderList(){
-    if (this.state.filteredDogList && this.state.filteredDogList.length > 0) return <DogList data={this.state.filteredDogList} onPress={(breed)=> this.showPictures(breed)} />
-
-    // show only suggested dogs only when user selects only one dog
-    // if (this.state.fullInput && this.state.fullInput.length > 0) return <DogList data={[this.state.fullInput]} />
-    // return null;
-  }
   // render suggestion of input
   renderSuggestion(){
     if (!this.state.fullInput && this.state.filteredDogList && this.state.filteredDogList.length > 0) {
@@ -59,12 +50,7 @@ class SearchPage extends React.Component {
 
   filterDogs(text){
     if (!text || text.length < 1) return null;
-    // return this.state.dogList.filter(dog => dog.includes(text.toLowerCase()));
     return this.state.dogList.filter(dog => dog.startsWith(text.toLowerCase()));
-  }
-
-  showLoading(){
-    return this.state.isLoading ? <Image style={styles.loadingField} source={require("../../images/dogrun.gif")} /> : null; 
   }
 
   showPictures(breed) {
@@ -78,10 +64,8 @@ class SearchPage extends React.Component {
       <>
         <StatusBar barStyle="dark-content" />
         <SafeAreaView style={styles.container}>
-          {this.showLoading()}
           <TextInput value={this.state.inputText} onChangeText={text => this.inputChanged(text)} style={styles.input} placeholder="insert here..." />
-          {this.renderList()}
-          {/* {this.renderSuggestion()} */}
+          <DogList data={this.state.filteredDogList} onPress={(breed)=> this.showPictures(breed)} />
         </SafeAreaView>
       </>
     );
