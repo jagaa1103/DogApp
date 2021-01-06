@@ -40,6 +40,7 @@ class DogList extends React.Component {
                     extraData={this.state}
                     keyExtractor={item => item} 
                     numColumns={3}
+                    keyboardShouldPersistTaps="always"
                 />
             // </KeyboardAvoidingView>
         )
